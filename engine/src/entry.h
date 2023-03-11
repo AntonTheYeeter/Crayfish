@@ -1,6 +1,6 @@
 #include "core/application.h"
 
-extern Application* createApp();
+extern CFAPI Application* createApp();
 
 int main(void)
 {

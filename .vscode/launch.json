@@ -5,6 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Launch(Windows)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/testapp.exe",
+            "cwd": "${workspaceFolder}/bin",
+            "preLaunchTask": "CMake: build",
+            "console": "newExternalWindow"
+        },
+        {
             "name": "Launch(Linux)",
             "type": "cppdbg",
             "request": "launch",

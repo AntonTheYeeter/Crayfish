@@ -1,6 +1,28 @@
 {
     "configurations": [
         {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/engine/src"
+            ],
+            "defines": [
+                "_DEBUG",
+                "CFEXPORT"
+            ],
+            "compilerPath": "C:/Program Files/LLVM/bin/clang.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "windows-clang-x64",
+            "mergeConfigurations": false,
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/engine/src",
+                    "${workspaceFolder}"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
+        },
+        {
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/engine/src"

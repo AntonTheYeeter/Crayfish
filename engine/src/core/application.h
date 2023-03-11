@@ -5,11 +5,10 @@
 
 typedef struct Application
 {
-
+    u32 test;
 } Application;
 
-CFAPI Application* createApp();
-void runApp(Application* app);
-void destroyApp(Application* app);
+CFAPI void runApp(Application* app);
+CFAPI void destroyApp(Application* app);
 
 #endif
