@@ -18,6 +18,7 @@ endif(LINUX)
 
 find_package(Vulkan REQUIRED)
 
+target_include_directories(engine PUBLIC "${PROJECT_SOURCE_DIR}/src")
 target_include_directories(engine PUBLIC ${Vulkan_INCLUDE_DIRS})
 target_link_libraries(engine PUBLIC ${Vulkan_LIBRARIES})
 

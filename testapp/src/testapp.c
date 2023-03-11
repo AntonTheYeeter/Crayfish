@@ -1,8 +1,10 @@
-#include <test.h>
+#include <entry.h>
 
-int main(void)
+#include <stdlib.h>
+
+Application* createApp()
 {
-    test("This is a test!");
+    Application* app = malloc(sizeof(Application));
 
-    return 0;
+    return app;
 }
