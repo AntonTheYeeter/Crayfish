@@ -1,10 +1,11 @@
 #include "core/application.h"
 
-extern CFAPI Application* createApp();
+extern ApplicationConfig configApp();
 
 int main(void)
 {
-    Application* app = createApp();
+    ApplicationConfig config = configApp();
+    Application* app = createApp(&config);
     runApp(app);
     destroyApp(app);
 
