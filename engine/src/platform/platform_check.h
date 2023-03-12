@@ -8,6 +8,9 @@
 #define CF_PLATFORM_WINDOWS
 #elif defined(__linux__) || defined(__gnu_linux__)
 #define CF_PLATFORM_LINUX
+#elif defined(__ANDROID__)
+#define CF_PLATFORM_ANDROID
+#error Android is not supported yet!
 #else
 #error Usupported Platform!
 #endif

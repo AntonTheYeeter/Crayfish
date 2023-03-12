@@ -9,7 +9,7 @@ ApplicationConfig configApp()
     config.windowY = 100;
     config.windowWidth = 1280;
     config.windowHeight = 720;
-    config.appName = "Crawfish Testapp";
+    config.appName = "Crayfish Testapp";
 
     return config;
 }
