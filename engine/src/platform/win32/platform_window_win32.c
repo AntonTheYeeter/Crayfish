@@ -17,6 +17,9 @@ typedef struct windowData
 
 LRESULT CALLBACK windowCallback(HWND hwnd, u32 msg, WPARAM wParam, LPARAM lParam);
 
+static u32 w;
+static u32 h;
+
 b8 platformCreateWindow(PlatformWindow* win, u32 x, u32 y, u32 width, u32 height, const char* title)
 {
     win->windowData = malloc(sizeof(windowData));
@@ -119,11 +122,8 @@ void platformWindowUpdate(PlatformWindow* win)
 
 void getWindowSize(u32* width, u32* height)
 {
-    RECT r = {0, 0, 0, 0};
-    GetClientRect(hwnd, &r);
-
-    *width = r.right - r.left;
-    *height = r.bottom - r.top;
+    *width = w;
+    *height = h;
 }
 
 LRESULT CALLBACK windowCallback(HWND hwnd, u32 msg, WPARAM wParam, LPARAM lParam)
@@ -143,6 +143,11 @@ LRESULT CALLBACK windowCallback(HWND hwnd, u32 msg, WPARAM wParam, LPARAM lParam
         
         case WM_SIZE:
         {
+            RECT r = {0, 0, 0, 0};
+            GetClientRect(hwnd, &r);
+
+            w = r.right - r.left;
+            h = r.bottom - r.top;
             fireEvent(EVENT_TYPE_WINDOW_RESIZED);
         } break;
 
