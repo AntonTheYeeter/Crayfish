@@ -1,5 +1,6 @@
 #include "platform/platform_window.h"
 #include "platform/platform_check.h"
+#include "core/event.h"
 
 #ifdef CF_PLATFORM_WINDOWS
 
@@ -13,6 +14,10 @@ typedef struct windowData
     HINSTANCE instance;
     HWND handle;
 } windowData;
+
+// Used for window resizing
+static u32 w;
+static u32 h;
 
 LRESULT CALLBACK windowCallback(HWND hwnd, u32 msg, WPARAM wParam, LPARAM lParam);
 
@@ -87,6 +92,8 @@ b8 platformCreateWindow(PlatformWindow* win, u32 x, u32 y, u32 width, u32 height
     ShowWindow(data->handle, cmdShow);
 
     hasClosed = FALSE;
+    w = clientWidth;
+    h = clientHeight;
 
     return TRUE;
 }
@@ -114,6 +121,12 @@ void platformWindowUpdate(PlatformWindow* win)
     win->hasClosed = hasClosed;
 }
 
+void getWindowSize(u32* width, u32* height)
+{
+    *width = w;
+    *height = h;
+}
+
 LRESULT CALLBACK windowCallback(HWND hwnd, u32 msg, WPARAM wParam, LPARAM lParam)
 {
     switch(msg)
@@ -128,6 +141,17 @@ LRESULT CALLBACK windowCallback(HWND hwnd, u32 msg, WPARAM wParam, LPARAM lParam
         case WM_CLOSE:
             hasClosed = TRUE;
             return 0;
+        
+        case WM_SIZE:
+        {
+            RECT r = {0, 0, 0, 0};
+            GetClientRect(hwnd, &r);
+
+            w = r.right - r.left;
+            h = r.bottom - r.top;
+
+            fireEvent(EVENT_TYPE_WINDOW_RESIZED);
+        } break;
 
         default:
             break;

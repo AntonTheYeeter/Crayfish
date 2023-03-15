@@ -1,6 +1,7 @@
 #include "application.h"
 #include "logger.h"
 #include "platform/platform.h"
+#include "core/event.h"
 
 #include <stdlib.h>
 
@@ -9,7 +10,7 @@ Application* createApp(ApplicationConfig* config)
     Application* app = malloc(sizeof(Application));
 
     platformCreateWindow(
-    &app->platform.windows[0],
+    &app->platform.window,
     config->windowX,
     config->windowY,
     config->windowWidth,
@@ -30,15 +31,27 @@ void runApp(Application* app)
     */
     do
     {
-        platformWindowUpdate(&app->platform.windows[0]);
+        platformWindowUpdate(&app->platform.window);
+
+        Event e = pollEvents();
+
+        if(e.type & EVENT_TYPE_WINDOW_RESIZED)
+        {
+            u32 w, h;
+            getWindowSize(&w, &h);
+
+            CF_INFO("Window Resized | Width: %u Height: %u", w, h);
+        }
+
+        resetEvent(&e);
     }
-    while(!(app->platform.windows[0].hasClosed));
+    while(!(app->platform.window.hasClosed));
 }
     
 
 void destroyApp(Application* app)
 {
-    platformDestroyWindow(&app->platform.windows[0]);
+    platformDestroyWindow(&app->platform.window);
 
     free(app);
 }

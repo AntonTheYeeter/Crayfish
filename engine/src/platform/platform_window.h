@@ -13,4 +13,6 @@ b8 platformCreateWindow(PlatformWindow* win, u32 x, u32 y, u32 width, u32 height
 void platformDestroyWindow(PlatformWindow* win);
 void platformWindowUpdate(PlatformWindow* win);
 
+void getWindowSize(u32* width, u32* height);
+
 #endif
