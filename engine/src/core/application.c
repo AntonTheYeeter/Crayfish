@@ -45,7 +45,9 @@ void runApp(Application* app)
 
         resetEvent(&e);
     }
-    while(!(app->platform.window.hasClosed));
+    while(!app->platform.window.hasClosed);
+
+    CF_INFO("Application closed.");
 }
     
 
