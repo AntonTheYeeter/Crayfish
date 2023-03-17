@@ -6,7 +6,7 @@
 
 b8 loggerStartup()
 {
-
+    return TRUE;
 }
 
 void loggerShutdown()

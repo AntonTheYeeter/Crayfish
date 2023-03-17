@@ -3,6 +3,7 @@
 
 #include "def.h"
 #include "platform/platform.h"
+#include "renderer/renderer.h"
 
 // TODO: multiple window support
 
@@ -18,6 +19,7 @@ typedef struct ApplicationConfig
 typedef struct Application
 {
     PlatformState platform;
+    Renderer renderer;
 } Application;
 
 CFAPI Application* createApp(ApplicationConfig* config);

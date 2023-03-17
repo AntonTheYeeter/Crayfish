@@ -13,5 +13,9 @@ void resetEvent(Event* event)
 
 void fireEvent(EventType type)
 {
-    e.type |= type;
+    if(e.type & type){}
+    else
+    {
+        e.type |= type;
+    }
 }

@@ -1,6 +1,5 @@
 #include "application.h"
 #include "logger.h"
-#include "platform/platform.h"
 #include "core/event.h"
 
 #include <stdlib.h>
@@ -17,6 +16,9 @@ Application* createApp(ApplicationConfig* config)
     config->windowHeight,
     config->appName
     );
+    
+    // TODO: Make this configurable
+    rendererStartup(&app->renderer, RENDERER_BACKEND_VULKAN, &app->platform.window);
 
     return app;
 }
@@ -31,6 +33,7 @@ void runApp(Application* app)
     */
     do
     {
+        rendererDrawFrame(&app->renderer);
         platformWindowUpdate(&app->platform.window);
 
         Event e = pollEvents();
@@ -40,20 +43,23 @@ void runApp(Application* app)
             u32 w, h;
             getWindowSize(&w, &h);
 
+            rendererOnResize(&app->renderer, w, h);
+
             CF_INFO("Window Resized | Width: %u Height: %u", w, h);
         }
 
         resetEvent(&e);
     }
     while(!app->platform.window.hasClosed);
-
-    CF_INFO("Application closed.");
 }
     
 
 void destroyApp(Application* app)
 {
+    rendererShutdown(&app->renderer);
     platformDestroyWindow(&app->platform.window);
 
     free(app);
+    
+    CF_INFO("Application closed.");
 }

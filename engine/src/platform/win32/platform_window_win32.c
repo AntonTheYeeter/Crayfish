@@ -4,16 +4,11 @@
 
 #ifdef CF_PLATFORM_WINDOWS
 
-#include <Windows.h>
+#include "platform_win32.h"
+
 #include <stdlib.h>
 
 static b8 hasClosed;
-
-typedef struct windowData
-{
-    HINSTANCE instance;
-    HWND handle;
-} windowData;
 
 LRESULT CALLBACK windowCallback(HWND hwnd, u32 msg, WPARAM wParam, LPARAM lParam);
 
@@ -22,8 +17,8 @@ static u32 h;
 
 b8 platformCreateWindow(PlatformWindow* win, u32 x, u32 y, u32 width, u32 height, const char* title)
 {
-    win->windowData = malloc(sizeof(windowData));
-    windowData* data = (windowData*)win->windowData;
+    win->windowData = malloc(sizeof(win32_windowData));
+    win32_windowData* data = (win32_windowData*)win->windowData;
 
     data->instance = GetModuleHandleA(0);
 
@@ -99,7 +94,7 @@ b8 platformCreateWindow(PlatformWindow* win, u32 x, u32 y, u32 width, u32 height
 
 void platformDestroyWindow(PlatformWindow* win)
 {
-    windowData* data = (windowData*)win->windowData;
+    win32_windowData* data = (win32_windowData*)win->windowData;
 
     DestroyWindow(data->handle);
     free(win->windowData);
@@ -107,7 +102,7 @@ void platformDestroyWindow(PlatformWindow* win)
 
 void platformWindowUpdate(PlatformWindow* win)
 {
-    windowData* data = (windowData*)win->windowData;
+    win32_windowData* data = (win32_windowData*)win->windowData;
 
     MSG msg;
 
