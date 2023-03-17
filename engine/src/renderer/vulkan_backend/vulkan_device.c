@@ -78,6 +78,8 @@ b8 createDevice(VulkanContext* context, PlatformWindow* win)
 
         PFN_vkCreateDebugUtilsMessengerEXT createFunc = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(context->instance, "vkCreateDebugUtilsMessengerEXT");
         VK_CHECK(createFunc(context->instance, &debuggerInfo, context->allocator, &context->debugger));
+
+        CF_DEBUG("Vulkan Debugger created successfully.");
     }
 
     // Surface
@@ -194,6 +196,8 @@ b8 createDevice(VulkanContext* context, PlatformWindow* win)
         vkGetDeviceQueue(context->device, context->graphicsQueue.familyIndex, 0, &context->graphicsQueue.handle);
         vkGetDeviceQueue(context->device, context->presentQueue.familyIndex, 0, &context->presentQueue.handle);
         vkGetDeviceQueue(context->device, context->transferQueue.familyIndex, 0, &context->transferQueue.handle);
+
+        CF_DEBUG("Vulkan Device created successfully.");
     }
 
     return TRUE;

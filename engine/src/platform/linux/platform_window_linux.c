@@ -5,24 +5,16 @@
 
 #ifdef CF_PLATFORM_LINUX
 
-#include <xcb/xcb.h>
+#include "platform_linux.h"
 #include <stdlib.h>
-
-typedef struct windowData
-{
-    xcb_connection_t* connection;
-    xcb_window_t window;
-
-    xcb_intern_atom_reply_t* closeReply;
-} windowData;
 
 static u32 w;
 static u32 h;
 
 b8 platformCreateWindow(PlatformWindow* win, u32 x, u32 y, u32 width, u32 height, const char* title)
 {
-    win->windowData = malloc(sizeof(windowData));
-    windowData* data = (windowData*)win->windowData;
+    win->windowData = malloc(sizeof(linux_windowData));
+    linux_windowData* data = (linux_windowData*)win->windowData;
 
     data->connection = xcb_connect(NULL, NULL);
 
@@ -76,7 +68,7 @@ b8 platformCreateWindow(PlatformWindow* win, u32 x, u32 y, u32 width, u32 height
 
 void platformDestroyWindow(PlatformWindow* win)
 {
-    windowData* data = (windowData*)win->windowData;
+    linux_windowData* data = (linux_windowData*)win->windowData;
 
     xcb_destroy_window(data->connection, data->window);
     xcb_disconnect(data->connection);
@@ -86,7 +78,7 @@ void platformDestroyWindow(PlatformWindow* win)
 
 void platformWindowUpdate(PlatformWindow* win)
 {
-    windowData* data = (windowData*)win->windowData;
+    linux_windowData* data = (linux_windowData*)win->windowData;
 
     xcb_generic_event_t* e;
     while((e = xcb_poll_for_event(data->connection)))

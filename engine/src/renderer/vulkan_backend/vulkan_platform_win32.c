@@ -15,6 +15,7 @@ void createSurface(PlatformWindow* win, VulkanContext* context)
     surfaceInfo.hwnd = data->handle;
 
     VK_CHECK(vkCreateWin32SurfaceKHR(context->instance, &surfaceInfo, context->allocator, &context->surface));
+    CF_DEBUG("Vulkan Surface created successfully.");
 }
 
 #endif
