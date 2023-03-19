@@ -81,10 +81,10 @@ b8 createSwapchain(VulkanSwapchain* swapchain, VulkanContext* context)
     VK_CHECK(vkCreateSwapchainKHR(context->device, &swapchainInfo, context->allocator, &swapchain->handle));
     CF_DEBUG("Vulkan Swapchain created successfully.");
 
-    u32 imageCount = 0;
-    vkGetSwapchainImagesKHR(context->device, swapchain->handle, &imageCount, NULL);
-    VkImage swapchainImages[imageCount];
-    vkGetSwapchainImagesKHR(context->device, swapchain->handle, &imageCount, swapchainImages);
+    u32 swapchainImageCount = 0;
+    vkGetSwapchainImagesKHR(context->device, swapchain->handle, &swapchainImageCount, NULL);
+    VkImage swapchainImages[swapchainImageCount];
+    vkGetSwapchainImagesKHR(context->device, swapchain->handle, &swapchainImageCount, swapchainImages);
 
     swapchain->images = swapchainImages;
 
