@@ -25,6 +25,7 @@ typedef struct VulkanQueue
 typedef struct VulkanSwapchain
 {
     VkSwapchainKHR handle;
+    u32 imageCount;
     VkImage* images;
     VkImageView* imageViews;
 } VulkanSwapchain;

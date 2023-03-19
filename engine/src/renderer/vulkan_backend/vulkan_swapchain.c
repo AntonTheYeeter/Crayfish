@@ -1,5 +1,7 @@
 #include "vulkan_swapchain.h"
 
+#include <stdlib.h>
+
 static VkSurfaceFormatKHR chooseSwapchainFormat(VkPhysicalDevice gpu, VkSurfaceKHR surface)
 {
     u32 formatCount = 0;
@@ -44,11 +46,6 @@ b8 createSwapchain(VulkanSwapchain* swapchain, VulkanContext* context)
     u32 imageCount = surfaceCaps.minImageCount;
     imageCount = (imageCount < surfaceCaps.maxImageCount) ? surfaceCaps.minImageCount + 1 : surfaceCaps.minImageCount;
 
-    if((surfaceCaps.maxImageCount > 0) && (imageCount > surfaceCaps.maxImageCount))
-    {
-        imageCount = surfaceCaps.maxImageCount;
-    }
-
     VkSurfaceFormatKHR format = chooseSwapchainFormat(context->gpu, context->surface);
 
     VkSwapchainCreateInfoKHR swapchainInfo = {VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR};
@@ -59,18 +56,11 @@ b8 createSwapchain(VulkanSwapchain* swapchain, VulkanContext* context)
     swapchainInfo.imageExtent = surfaceCaps.currentExtent;
     swapchainInfo.imageArrayLayers = 1;
     swapchainInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-
-    if(context->graphicsQueue.familyIndex != context->presentQueue.familyIndex)
-    {
-        u32 queueFamilies[] = {context->graphicsQueue.familyIndex, context->presentQueue.familyIndex};
-        swapchainInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-        swapchainInfo.queueFamilyIndexCount = 2;
-        swapchainInfo.pQueueFamilyIndices = queueFamilies;
-    }
-    else
-    {
-        swapchainInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    }
+    
+    u32 queueFamilies[] = {context->graphicsQueue.familyIndex, context->presentQueue.familyIndex};
+    swapchainInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+    swapchainInfo.queueFamilyIndexCount = 2;
+    swapchainInfo.pQueueFamilyIndices = queueFamilies;
 
     swapchainInfo.preTransform = surfaceCaps.currentTransform;
     swapchainInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
@@ -81,19 +71,47 @@ b8 createSwapchain(VulkanSwapchain* swapchain, VulkanContext* context)
     VK_CHECK(vkCreateSwapchainKHR(context->device, &swapchainInfo, context->allocator, &swapchain->handle));
     CF_DEBUG("Vulkan Swapchain created successfully.");
 
-    u32 swapchainImageCount = 0;
-    vkGetSwapchainImagesKHR(context->device, swapchain->handle, &swapchainImageCount, NULL);
-    VkImage swapchainImages[swapchainImageCount];
-    vkGetSwapchainImagesKHR(context->device, swapchain->handle, &swapchainImageCount, swapchainImages);
+    VK_CHECK(vkGetSwapchainImagesKHR(context->device, swapchain->handle, &swapchain->imageCount, NULL));
+    swapchain->images = calloc(swapchain->imageCount, sizeof(VkImage));
+    VK_CHECK(vkGetSwapchainImagesKHR(context->device, swapchain->handle, &swapchain->imageCount, swapchain->images));
 
-    swapchain->images = swapchainImages;
+    VkImageViewCreateInfo imageViewInfo = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
+    imageViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    imageViewInfo.format = format.format;
+    imageViewInfo.components.r = VK_COMPONENT_SWIZZLE_R;
+    imageViewInfo.components.g = VK_COMPONENT_SWIZZLE_G;
+    imageViewInfo.components.b = VK_COMPONENT_SWIZZLE_B;
+    imageViewInfo.components.a = VK_COMPONENT_SWIZZLE_A;
+    imageViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    imageViewInfo.subresourceRange.baseMipLevel = 0;
+    imageViewInfo.subresourceRange.levelCount = 1;
+    imageViewInfo.subresourceRange.baseArrayLayer = 0;
+    imageViewInfo.subresourceRange.layerCount = 1;
+
+    swapchain->imageViews = calloc(swapchain->imageCount, sizeof(VkImageView));
+
+    for(u32 i = 0; i < swapchain->imageCount; i++)
+    {
+        imageViewInfo.image = swapchain->images[i];
+        VK_CHECK(vkCreateImageView(context->device, &imageViewInfo, context->allocator, &swapchain->imageViews[i]));
+    }
+
+    CF_DEBUG("Vulkan Image Views created successfully.");
 
     return TRUE;
 }
 
 void destroySwapchain(VulkanContext* context, VulkanSwapchain* swapchain)
 {
+    for(u32 i = 0; i < swapchain->imageCount; i++)
+    {
+        vkDestroyImageView(context->device, swapchain->imageViews[i], context->allocator);
+    }
+
     vkDestroySwapchainKHR(context->device, swapchain->handle, context->allocator);
+
+    free(swapchain->imageViews);
+    free(swapchain->images);
 }
 
 b8 recreateSwapchain(VulkanSwapchain* swapchain, VulkanContext* context)
