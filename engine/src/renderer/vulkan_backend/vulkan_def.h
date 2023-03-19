@@ -12,7 +12,7 @@
     VkResult result = res;                                                  \
     if(vulkanResultIsError(result))                                         \
     {                                                                       \
-        CF_FATAL("Vulkan Error: %s\n", vulkanResultToString(result));         \
+        CF_FATAL("Vulkan Error: %s\n", vulkanResultToString(result));       \
     }                                                                       \
 }
 
@@ -21,6 +21,13 @@ typedef struct VulkanQueue
     VkQueue handle;
     u32 familyIndex;
 } VulkanQueue;
+
+typedef struct VulkanSwapchain
+{
+    VkSwapchainKHR handle;
+    VkImage* images;
+    VkImageView* imageViews;
+} VulkanSwapchain;
 
 typedef struct VulkanContext
 {
@@ -35,6 +42,8 @@ typedef struct VulkanContext
     VulkanQueue graphicsQueue;
     VulkanQueue presentQueue;
     VulkanQueue transferQueue;
+
+    VulkanSwapchain swapchain;
 } VulkanContext;
 
 #endif
