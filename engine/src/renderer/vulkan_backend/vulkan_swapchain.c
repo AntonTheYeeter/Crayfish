@@ -47,6 +47,7 @@ b8 createSwapchain(VulkanSwapchain* swapchain, VulkanContext* context)
     imageCount = (imageCount < surfaceCaps.maxImageCount) ? surfaceCaps.minImageCount + 1 : surfaceCaps.minImageCount;
 
     VkSurfaceFormatKHR format = chooseSwapchainFormat(context->gpu, context->surface);
+    swapchain->imageFormat = format.format;
 
     VkSwapchainCreateInfoKHR swapchainInfo = {VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR};
     swapchainInfo.surface = context->surface;

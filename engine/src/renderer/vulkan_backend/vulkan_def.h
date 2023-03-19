@@ -24,6 +24,7 @@ typedef struct VulkanQueue
 
 typedef struct VulkanSwapchain
 {
+    VkFormat imageFormat;
     VkSwapchainKHR handle;
     u32 imageCount;
     VkImage* images;
@@ -45,6 +46,8 @@ typedef struct VulkanContext
     VulkanQueue transferQueue;
 
     VulkanSwapchain swapchain;
+
+    VkRenderPass renderPass;
 } VulkanContext;
 
 #endif
