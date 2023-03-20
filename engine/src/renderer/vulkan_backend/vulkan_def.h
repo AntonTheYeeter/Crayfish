@@ -33,6 +33,7 @@ typedef struct VulkanSwapchain
 
 typedef struct VulkanContext
 {
+    VkExtent2D windowExtent;
     VkAllocationCallbacks* allocator;
     VkDebugUtilsMessengerEXT debugger;
 
@@ -48,6 +49,14 @@ typedef struct VulkanContext
     VulkanSwapchain swapchain;
 
     VkRenderPass renderPass;
+    VkFramebuffer* scFramebuffers;
+
+    VkCommandPool commandPool;
+    VkCommandBuffer commandBuffer;
+
+    VkSemaphore imageAvailableSemaphore;
+    VkSemaphore renderFinishedSemaphore;
+    VkFence inFlightFence;
 } VulkanContext;
 
 #endif

@@ -58,4 +58,6 @@ CF_STATIC_ASSERT(sizeof(b32) == 4, "b32 must be 4 bytes in size!!!");
 
 #define ARRAY_SIZE(arr) sizeof(arr) / sizeof(arr[0])
 
+#define U64_MAX 0xffffffffffffffff
+
 #endif

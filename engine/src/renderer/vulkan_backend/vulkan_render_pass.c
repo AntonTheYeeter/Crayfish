@@ -27,6 +27,8 @@ b8 createRenderPass(VulkanContext* context)
 
     VK_CHECK(vkCreateRenderPass(context->device, &renderPassInfo, context->allocator, &context->renderPass));
 
+    CF_DEBUG("Vulkan Render Pass created successfully.");
+
     return TRUE;
 }
 
