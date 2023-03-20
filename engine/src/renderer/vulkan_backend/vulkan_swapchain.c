@@ -1,4 +1,5 @@
 #include "vulkan_swapchain.h"
+#include "vulkan_framebuffers.h"
 
 #include <stdlib.h>
 
@@ -117,5 +118,13 @@ void destroySwapchain(VulkanContext* context, VulkanSwapchain* swapchain)
 
 b8 recreateSwapchain(VulkanSwapchain* swapchain, VulkanContext* context)
 {
+    vkDeviceWaitIdle(context->device);
+
+    destroySwapchain(context, swapchain);
+    destroyFramebuffers(context);
+
+    createSwapchain(swapchain, context);
+    createFramebuffers(context);
+
     return TRUE;
 }

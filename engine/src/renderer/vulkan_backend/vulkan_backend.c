@@ -31,6 +31,8 @@ b8 vulkan_backendStartup(PlatformWindow* win)
 
 void vulkan_backendShutdown()
 {
+    vkDeviceWaitIdle(context.device);
+
     destroySyncObjects(&context);
     freeCommandBuffer(&context);
     destroyCommandPool(&context);
@@ -44,10 +46,17 @@ void vulkan_backendShutdown()
 void vulkan_backendDrawFrame()
 {
     vkWaitForFences(context.device, 1, &context.inFlightFence, VK_TRUE, U64_MAX);
-    vkResetFences(context.device, 1, &context.inFlightFence);
 
     u32 imageIndex = 0;
-    vkAcquireNextImageKHR(context.device, context.swapchain.handle, U64_MAX, context.imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+    VkResult res = vkAcquireNextImageKHR(context.device, context.swapchain.handle, U64_MAX, context.imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+
+    if(res == VK_ERROR_OUT_OF_DATE_KHR)
+    {
+        getWindowSize(&context.windowExtent.width, &context.windowExtent.height);
+        recreateSwapchain(&context.swapchain, &context);
+    }
+
+    vkResetFences(context.device, 1, &context.inFlightFence);
 
     vkResetCommandBuffer(context.commandBuffer, 0);
 
@@ -55,7 +64,6 @@ void vulkan_backendDrawFrame()
     cmdBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
     VK_CHECK(vkBeginCommandBuffer(context.commandBuffer, &cmdBeginInfo));
-
 
     VkRenderPassBeginInfo rpBeginInfo = {VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO};
     rpBeginInfo.renderPass = context.renderPass;
@@ -107,19 +115,16 @@ void vulkan_backendDrawFrame()
     presentInfo.pSwapchains = &context.swapchain.handle;
     presentInfo.pImageIndices = &imageIndex;
     
-    VK_CHECK(vkQueuePresentKHR(context.presentQueue.handle, &presentInfo));
+    res = vkQueuePresentKHR(context.presentQueue.handle, &presentInfo);
+
+    if(res == VK_ERROR_OUT_OF_DATE_KHR)
+    {
+        getWindowSize(&context.windowExtent.width, &context.windowExtent.height);
+        recreateSwapchain(&context.swapchain, &context);
+    }
 }
 
 void vulkan_backendOnResize(u32 newWidth, u32 newHeight)
 {
-    vkDeviceWaitIdle(context.device);
-
-    destroyFramebuffers(&context);
-    destroySwapchain(&context, &context.swapchain);
-
-    context.windowExtent.width = newWidth;
-    context.windowExtent.height = newHeight;
-
-    createSwapchain(&context.swapchain, &context);
-    createFramebuffers(&context);
+    
 }
