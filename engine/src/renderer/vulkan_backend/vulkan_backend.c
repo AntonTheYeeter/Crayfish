@@ -112,5 +112,14 @@ void vulkan_backendDrawFrame()
 
 void vulkan_backendOnResize(u32 newWidth, u32 newHeight)
 {
+    vkDeviceWaitIdle(context.device);
 
+    destroyFramebuffers(&context);
+    destroySwapchain(&context, &context.swapchain);
+
+    context.windowExtent.width = newWidth;
+    context.windowExtent.height = newHeight;
+
+    createSwapchain(&context.swapchain, &context);
+    createFramebuffers(&context);
 }
