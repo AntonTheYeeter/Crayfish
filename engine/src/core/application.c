@@ -5,11 +5,12 @@
 b8 appStartup(ApplicationConfig* config, Application* app)
 {
     CF_ASSERT(loggerStartup);
+    CF_ASSERT(platformCreateWindow(&app->window, config->windowPosX, config->windowPosY, config->windowWidth, config->windowHeight, config->applicationName));
 
     return TRUE;
 }
 
-void appRun()
+void appRun(Application* app)
 {
     CF_FATAL("Test message %i", 1234);
     CF_ERROR("Test message %i", 1234);
@@ -21,7 +22,8 @@ void appRun()
     while(TRUE);
 }
 
-void appShutdown()
+void appShutdown(Application* app)
 {
+    platformDestroyWindow(&app->window);
     loggerShutdown();
 }

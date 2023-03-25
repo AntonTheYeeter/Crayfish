@@ -3,6 +3,9 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#include "core/cf_memory.h"
+#include "platform/platform.h"
+
 b8 loggerStartup()
 {
     // For file logging
@@ -19,6 +22,7 @@ void _log(LogLevel lvl, const char* msg, ...)
     const char* prefix[] = {"[FATAL]: ", "[ERROR]: ", "[WARN]: ", "[INFO]: ", "[DEBUG]: ", "[TRACE]: "};
 
     char buffer[32000];
+    cfZeroMemory(buffer, 32000);
 
     __builtin_va_list arg;
     va_start(arg, msg);
@@ -26,9 +30,9 @@ void _log(LogLevel lvl, const char* msg, ...)
     va_end(arg);
 
     char outMessage[32000];
+    cfZeroMemory(outMessage, 32000);
 
     snprintf(outMessage, 32000, "%s%s\n", prefix[lvl], buffer);
-
-    // TODO: Platform specific console output
-    printf("%s", outMessage);
+    
+    platformWriteConsole(lvl, outMessage);
 }
