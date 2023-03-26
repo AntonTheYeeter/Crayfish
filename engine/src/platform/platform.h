@@ -23,6 +23,6 @@ b8 platformCreateWindow(PlatformWindow* win, u32 x, u32 y, u32 w, u32 h, const c
 void platformDestroyWindow(PlatformWindow* win);
 
 void platformWriteConsole(u32 color, const char* msg);
-u64 getMilliseconds();
+f64 platformGetTime();
 
 #endif

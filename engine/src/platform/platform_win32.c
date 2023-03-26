@@ -104,14 +104,14 @@ void platformWriteConsole(u32 color, const char* msg)
     WriteConsoleA(stdHandle, msg, strlen(msg), &numWritten, PNULL);
 }
 
-u64 getMilliseconds()
+f64 platformGetTime()
 {
     LARGE_INTEGER freq;
     QueryPerformanceFrequency(&freq);
     LARGE_INTEGER now;
     QueryPerformanceCounter(&now);
 
-    return (1000LL * now.QuadPart) / freq.QuadPart;
+    return (f64)((now.QuadPart) / freq.QuadPart);
 }
 
 LRESULT CALLBACK windowCallabck(HWND hwnd, u32 msg, WPARAM wParam, LPARAM lParam)
