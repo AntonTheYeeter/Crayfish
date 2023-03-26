@@ -16,10 +16,11 @@ typedef struct ApplicationConfig
 typedef struct Application
 {
     PlatformWindow window;
+    b8 running;
 } Application;
 
-CFAPI b8 appStartup(ApplicationConfig* config, Application* app);
-CFAPI void appRun(Application* app);
-CFAPI void appShutdown(Application* app);
+CFAPI b8 appStartup(ApplicationConfig* config);
+CFAPI void appRun();
+CFAPI void appShutdown();
 
 #endif

@@ -21,6 +21,7 @@ typedef struct PlatformWindow
 
 b8 platformCreateWindow(PlatformWindow* win, u32 x, u32 y, u32 w, u32 h, const char* title);
 void platformDestroyWindow(PlatformWindow* win);
+void platformWindowUpdate(PlatformWindow* win);
 
 void platformWriteConsole(u32 color, const char* msg);
 f64 platformGetTime();

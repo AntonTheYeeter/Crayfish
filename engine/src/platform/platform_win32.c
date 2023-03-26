@@ -7,6 +7,7 @@
 
 #include "core/cf_memory.h"
 #include "core/logger.h"
+#include "core/event.h"
 
 typedef struct WindowData
 {
@@ -82,6 +83,17 @@ void platformDestroyWindow(PlatformWindow* win)
     cfFree(win->windowData);
 }
 
+void platformWindowUpdate(PlatformWindow* win)
+{
+    MSG msg;
+
+    while(PeekMessageA(&msg, 0, 0, 0, PM_REMOVE))
+    {
+        TranslateMessage(&msg);
+        DispatchMessageA(&msg);
+    }
+}
+
 void platformWriteConsole(u32 color, const char* msg)
 {
     HANDLE stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -108,16 +120,42 @@ f64 platformGetTime()
 {
     LARGE_INTEGER freq;
     QueryPerformanceFrequency(&freq);
-    LARGE_INTEGER now;
-    QueryPerformanceCounter(&now);
 
-    return (f64)((now.QuadPart) / freq.QuadPart);
+    f64 frequency = 1.0 / freq.QuadPart;
+
+    LARGE_INTEGER time;
+    QueryPerformanceCounter(&time);
+
+    return (f64)time.QuadPart * frequency;
 }
 
 LRESULT CALLBACK windowCallabck(HWND hwnd, u32 msg, WPARAM wParam, LPARAM lParam)
 {
     switch(msg)
     {
+        case WM_ERASEBKGND:
+            return 1;
+
+        case WM_DESTROY:
+            PostQuitMessage(0);
+            return 0;
+
+        case WM_CLOSE:
+            fireEvent(EVENT_CODE_WINDOW_CLOSED, PNULL);
+            return 0;
+
+        case WM_SIZE:
+        {
+            RECT r = {0, 0, 0, 0};
+            GetClientRect(hwnd, &r);
+
+            u32 windowSize[2];
+            windowSize[0] = r.right - r.left;
+            windowSize[1] = r.bottom - r.top;
+
+            fireEvent(EVENT_CODE_WINDOW_RESIZED, windowSize);
+        } break;
+
         default:
             break;
     }
