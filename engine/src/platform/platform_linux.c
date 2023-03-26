@@ -9,11 +9,13 @@
 
 #include "core/cf_memory.h"
 #include "core/logger.h"
+#include "core/event.h"
 
 typedef struct WindowData
 {
     xcb_connection_t* connection;
     xcb_window_t window;
+    xcb_intern_atom_reply_t* closeReply;
 } WindowData;
 
 b8 platformCreateWindow(PlatformWindow* win, u32 x, u32 y, u32 w, u32 h, const char* title)
@@ -38,6 +40,12 @@ b8 platformCreateWindow(PlatformWindow* win, u32 x, u32 y, u32 w, u32 h, const c
         return FALSE;
     }
 
+    xcb_intern_atom_cookie_t protocolsCookie = xcb_intern_atom(data->connection, TRUE, 12, "WM_PROTOCOLS");
+    xcb_intern_atom_reply_t* protocolsReply = xcb_intern_atom_reply(data->connection, protocolsCookie, 0);
+    xcb_intern_atom_cookie_t closeCookie = xcb_intern_atom(data->connection, FALSE, 16, "WM_DELETE_WINDOW");
+    data->closeReply = xcb_intern_atom_reply(data->connection, closeCookie, 0);
+    xcb_change_property(data->connection, XCB_PROP_MODE_REPLACE, data->window, (*protocolsReply).atom, 4, 32, 1, &(*data->closeReply).atom);
+
     xcb_map_window(data->connection, data->window);
     xcb_flush(data->connection);
 
@@ -52,6 +60,47 @@ void platformDestroyWindow(PlatformWindow* win)
     xcb_disconnect(data->connection);
 
     cfFree(win->windowData);
+}
+
+void platformWindowUpdate(PlatformWindow* win)
+{
+    WindowData* data = (WindowData*)win->windowData;
+    
+    xcb_generic_event_t* e;
+
+    while((e = xcb_poll_for_event(data->connection)))
+    {
+        switch(e->response_type & ~0x80)
+        {
+            case XCB_EXPOSE:
+                break;
+            
+            case XCB_CLIENT_MESSAGE:
+            {
+                if((*(xcb_client_message_event_t*)e).data.data32[0] == (*data->closeReply).atom)
+                {
+                    fireEvent(EVENT_CODE_WINDOW_CLOSED, PNULL);
+                    return;
+                }
+            }
+
+            case XCB_CONFIGURE_NOTIFY:
+            {
+                const xcb_configure_notify_event_t* cfgEvent = (const xcb_configure_notify_event_t*)e;
+
+                u32 windowSize[2];
+                windowSize[0] = cfgEvent->width;
+                windowSize[1] = cfgEvent->height;
+
+                fireEvent(EVENT_CODE_WINDOW_RESIZED, windowSize);
+            } break;
+
+            default:
+                break;
+        }
+
+        cfFree(e);
+    }
 }
 
 void platformWriteConsole(u32 color, const char* msg)
