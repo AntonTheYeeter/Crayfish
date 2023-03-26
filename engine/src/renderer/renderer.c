@@ -1,0 +1,44 @@
+#include "renderer.h"
+#include "core/logger.h"
+#include "vulkan_backend/vulkan_backend.h"
+
+typedef enum BackendType
+{
+    RENDERER_BACKEND_TYPE_VULKAN,
+    RENDERER_BACKEND_TYPE_OPENGL,
+    RENDERER_BACKEND_TYPE_DIRECTX
+} BackendType;
+
+b8 rendererStartup(Renderer* r, BackendType backend, u32 windowWidth, u32 windowHeight)
+{
+    if(backend == RENDERER_BACKEND_TYPE_VULKAN)
+    {
+        r->backendStartup = vulkan_rendererBackendStartup;
+        r->backendShutdown = vulkan_rendererBackendShutdown;
+        r->backendDrawFrame = vulkan_rendererBackendDrawFrame;
+        r->backendOnResize = vulkan_rendererBackendOnResize;
+    }
+    else
+    {
+        CF_FATAL("Crayfish only supports Vulkan!");
+    }
+
+    r->backendStartup(windowWidth, windowHeight);
+
+    return 0;
+}
+
+void rendererShutdown(Renderer* r)
+{
+    r->backendShutdown();
+}
+
+void rendererDrawFrame(Renderer* r, f32 delta)
+{
+    r->backendDrawFrame(delta);
+}
+
+void rendererOnResize(Renderer* r, u32 newWidth, u32 newHeight)
+{
+    r->backendOnResize(newWidth, newHeight);
+}
