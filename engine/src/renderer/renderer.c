@@ -14,11 +14,12 @@ b8 rendererStartup(Renderer* r, BackendType backend, u32 windowWidth, u32 window
     else
     {
         CF_FATAL("Crayfish only supports Vulkan!");
+        return FALSE;
     }
 
     r->backendStartup(windowWidth, windowHeight);
 
-    return 0;
+    return TRUE;
 }
 
 void rendererShutdown(Renderer* r)
