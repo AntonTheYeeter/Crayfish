@@ -2,13 +2,6 @@
 #include "core/logger.h"
 #include "vulkan_backend/vulkan_backend.h"
 
-typedef enum BackendType
-{
-    RENDERER_BACKEND_TYPE_VULKAN,
-    RENDERER_BACKEND_TYPE_OPENGL,
-    RENDERER_BACKEND_TYPE_DIRECTX
-} BackendType;
-
 b8 rendererStartup(Renderer* r, BackendType backend, u32 windowWidth, u32 windowHeight)
 {
     if(backend == RENDERER_BACKEND_TYPE_VULKAN)

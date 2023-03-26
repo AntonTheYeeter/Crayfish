@@ -3,6 +3,7 @@
 
 #include "def.h"
 #include "platform/platform.h"
+#include "renderer/renderer.h"
 
 typedef struct ApplicationConfig
 {
@@ -15,8 +16,9 @@ typedef struct ApplicationConfig
 
 typedef struct Application
 {
-    PlatformWindow window;
     b8 running;
+    PlatformWindow window;
+    Renderer renderer;
 } Application;
 
 CFAPI b8 appStartup(ApplicationConfig* config);

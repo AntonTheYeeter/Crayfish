@@ -15,6 +15,7 @@ b8 appStartup(ApplicationConfig* config)
     cfZeroMemory(&app.window, sizeof(PlatformWindow));
     CF_ASSERT(platformCreateWindow(&app.window, config->windowPosX, config->windowPosY, config->windowWidth, config->windowHeight, config->applicationName));
     CF_ASSERT(eventsStartup());
+    CF_ASSERT(rendererStartup(&app.renderer, RENDERER_BACKEND_TYPE_VULKAN/*TODO: Make this configurable*/, config->windowWidth, config->windowHeight));
 
     addEvent(EVENT_CODE_WINDOW_CLOSED, onWindowClose);
     addEvent(EVENT_CODE_WINDOW_RESIZED, onWindowResize);
@@ -33,6 +34,7 @@ void appRun()
     {
         startTime = platformGetTime();
 
+        rendererDrawFrame(&app.renderer, deltaTime);
         platformWindowUpdate(&app.window);
 
         deltaTime = platformGetTime() - startTime;
@@ -43,6 +45,7 @@ void appShutdown()
 {
     removeEvent(EVENT_CODE_WINDOW_CLOSED);
 
+    rendererShutdown(&app.renderer);
     eventsShutdown();
     platformDestroyWindow(&app.window);
     loggerShutdown();
