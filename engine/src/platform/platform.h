@@ -26,4 +26,10 @@ void platformWindowUpdate(PlatformWindow* win);
 void platformWriteConsole(u32 color, const char* msg);
 f64 platformGetTime();
 
+// VUlkan platform functions
+#include <vulkan/vulkan.h>
+
+const char* getPlatformSurfaceExtenion();
+VkSurfaceKHR createSurface(PlatformWindow* win, VkInstance instance, VkAllocationCallbacks* allocator);
+
 #endif

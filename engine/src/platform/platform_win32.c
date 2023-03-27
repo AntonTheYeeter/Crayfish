@@ -163,4 +163,30 @@ LRESULT CALLBACK windowCallabck(HWND hwnd, u32 msg, WPARAM wParam, LPARAM lParam
     return DefWindowProcA(hwnd, msg, wParam, lParam);
 }
 
+// Vulkan platform functions
+
+#include <vulkan/vulkan_win32.h>
+
+const char* getPlatformSurfaceExtenion()
+{
+    return VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
+}
+
+VkSurfaceKHR createSurface(PlatformWindow* win, VkInstance instance, VkAllocationCallbacks* allocator)
+{
+    WindowData* data = (WindowData*)win->windowData;
+
+    VkWin32SurfaceCreateInfoKHR surfaceInfo = {VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR};
+    surfaceInfo.hinstance = data->hInstance;
+    surfaceInfo.hwnd = data->hwnd;
+
+    VkSurfaceKHR surface;
+    if((vkCreateWin32SurfaceKHR(instance, &surfaceInfo, allocator, &surface) != VK_SUCCESS))
+    {
+        return 0;
+    }
+
+    return surface;
+}
+
 #endif

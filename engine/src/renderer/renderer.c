@@ -2,7 +2,7 @@
 #include "core/logger.h"
 #include "vulkan_backend/vulkan_backend.h"
 
-b8 rendererStartup(Renderer* r, BackendType backend, u32 windowWidth, u32 windowHeight)
+b8 rendererStartup(PlatformWindow* win, Renderer* r, BackendType backend, u32 windowWidth, u32 windowHeight)
 {
     if(backend == RENDERER_BACKEND_TYPE_VULKAN)
     {
@@ -17,7 +17,7 @@ b8 rendererStartup(Renderer* r, BackendType backend, u32 windowWidth, u32 window
         return FALSE;
     }
 
-    r->backendStartup(windowWidth, windowHeight);
+    r->backendStartup(win, windowWidth, windowHeight);
 
     return TRUE;
 }
