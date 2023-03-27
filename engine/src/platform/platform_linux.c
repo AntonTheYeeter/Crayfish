@@ -127,4 +127,28 @@ f64 platformGetTime()
     return (f64)time.tv_sec + time.tv_nsec * 0.000000001;
 }
 
+#include <vulkan/vulkan_xcb.h>
+
+const char* getPlatformSurfaceExtenion()
+{
+    return VK_KHR_XCB_SURFACE_EXTENSION_NAME;
+}
+
+VkSurfaceKHR createSurface(PlatformWindow* win, VkInstance instance, VkAllocationCallbacks* allocator)
+{
+    WindowData* data = (WindowData*)win->windowData;
+
+    VkXcbSurfaceCreateInfoKHR surfaceInfo = {VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR};
+    surfaceInfo.connection = data.connection;
+    surfaceInfo.window = data.window;
+
+    VkSurfaceKHR surface;
+    if((vkCreateXcbSurfaceKHR(instance, &surfaceInfo, allocator, &surface) != VK_SUCCESS))
+    {
+        return 0;
+    }
+
+    return surface;
+}
+
 #endif
