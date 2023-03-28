@@ -26,16 +26,17 @@ typedef struct VulkanContext
     VkQueue transferQueue;
 
     VkDevice device;
+    VkSurfaceFormatKHR scFormat;
     VkSwapchainKHR swapchain;
     u32 scImageCount;
-    VkImage scImages;
-    VkImageView scImageViews;
+    VkImage* scImages;
+    VkImageView* scImageViews;
 
     VkRenderPass renderPass;
-    VkFramebuffer scFramebuffers;
+    VkFramebuffer* scFramebuffers;
 
     VkCommandPool commandPool;
-    VkCommandBuffer* commandBuffers;
+    VkCommandBuffer commandBuffer;
 
     VkSemaphore imageAvailableSemaphore;
     VkSemaphore renderFinishedSemaphore;
