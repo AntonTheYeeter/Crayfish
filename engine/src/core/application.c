@@ -59,4 +59,6 @@ void onWindowClose(EventCode code, void* data)
 void onWindowResize(EventCode code, void* data)
 {
     CF_INFO("Window resized. Width: %i Height: %i", ((u32*)data)[0], ((u32*)data)[1]);
+
+    rendererOnResize(&app.renderer, ((u32*)data)[0],  ((u32*)data)[1]);
 }

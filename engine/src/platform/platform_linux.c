@@ -45,6 +45,7 @@ b8 platformCreateWindow(PlatformWindow* win, u32 x, u32 y, u32 w, u32 h, const c
     xcb_intern_atom_cookie_t closeCookie = xcb_intern_atom(data->connection, FALSE, 16, "WM_DELETE_WINDOW");
     data->closeReply = xcb_intern_atom_reply(data->connection, closeCookie, 0);
     xcb_change_property(data->connection, XCB_PROP_MODE_REPLACE, data->window, (*protocolsReply).atom, 4, 32, 1, &(*data->closeReply).atom);
+    cfFree(protocolsReply);
 
     xcb_map_window(data->connection, data->window);
     xcb_flush(data->connection);
