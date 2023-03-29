@@ -476,7 +476,7 @@ void vulkan_rendererBackendDrawFrame(f32 delta)
     vkResetFences(context.device, 1, &context.inFlightFence);
 
     u32 imageIndex = 0;
-    vkAcquireNextImageKHR(context.device, context.swapchain, U64_MAX, context.imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+    VK_CHECK(vkAcquireNextImageKHR(context.device, context.swapchain, U64_MAX, context.imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex));
 
     VK_CHECK(vkResetCommandBuffer(context.commandBuffer, 0));
 
@@ -532,7 +532,7 @@ void vulkan_rendererBackendDrawFrame(f32 delta)
     presentInfo.pSwapchains = &context.swapchain;
     presentInfo.pImageIndices = &imageIndex;
 
-    vkQueuePresentKHR(context.presentQueue, &presentInfo);
+    VK_CHECK(vkQueuePresentKHR(context.presentQueue, &presentInfo));
 }
 
 void vulkan_rendererBackendOnResize(u32 newWidth, u32 newHeight)
