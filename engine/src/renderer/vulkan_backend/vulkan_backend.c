@@ -387,10 +387,12 @@ void createSyncObjects()
     VK_CHECK(vkCreateFence(context.device, &fenceInfo, context.allocator, &context.inFlightFence));
 }
 
-void recreateSwapchain()
+void recreateSwapchain(u32 w, u32 h)
 {
-
     vkDeviceWaitIdle(context.device);
+
+    context.windowExtent.width = w;
+    context.windowExtent.height = h;
 
     for(u32 i = 0; i < context.scImageCount; i++)
     {
@@ -548,8 +550,5 @@ void vulkan_rendererBackendDrawFrame(f32 delta)
 
 void vulkan_rendererBackendOnResize(u32 newWidth, u32 newHeight)
 {
-    context.windowExtent.width = newWidth;
-    context.windowExtent.height = newHeight;
-
-    recreateSwapchain();
+    recreateSwapchain(newWidth, newHeight);
 }
