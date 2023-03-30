@@ -140,8 +140,8 @@ VkSurfaceKHR createSurface(PlatformWindow* win, VkInstance instance, VkAllocatio
     WindowData* data = (WindowData*)win->windowData;
 
     VkXcbSurfaceCreateInfoKHR surfaceInfo = {VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR};
-    surfaceInfo.connection = data.connection;
-    surfaceInfo.window = data.window;
+    surfaceInfo.connection = data->connection;
+    surfaceInfo.window = data->window;
 
     VkSurfaceKHR surface;
     if((vkCreateXcbSurfaceKHR(instance, &surfaceInfo, allocator, &surface) != VK_SUCCESS))

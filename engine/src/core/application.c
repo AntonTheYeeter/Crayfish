@@ -43,6 +43,7 @@ void appRun()
 
 void appShutdown()
 {
+    removeEvent(EVENT_CODE_WINDOW_RESIZED);
     removeEvent(EVENT_CODE_WINDOW_CLOSED);
 
     rendererShutdown(&app.renderer);

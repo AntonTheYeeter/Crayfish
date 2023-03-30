@@ -389,6 +389,7 @@ void createSyncObjects()
 
 void recreateSwapchain()
 {
+
     vkDeviceWaitIdle(context.device);
 
     for(u32 i = 0; i < context.scImageCount; i++)
@@ -476,7 +477,12 @@ void vulkan_rendererBackendDrawFrame(f32 delta)
     vkResetFences(context.device, 1, &context.inFlightFence);
 
     u32 imageIndex = 0;
-    VK_CHECK(vkAcquireNextImageKHR(context.device, context.swapchain, U64_MAX, context.imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex));
+    VkResult res = vkAcquireNextImageKHR(context.device, context.swapchain, U64_MAX, context.imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+
+    if(res == VK_ERROR_OUT_OF_DATE_KHR)
+    {
+        return;
+    }
 
     VK_CHECK(vkResetCommandBuffer(context.commandBuffer, 0));
 
@@ -532,7 +538,12 @@ void vulkan_rendererBackendDrawFrame(f32 delta)
     presentInfo.pSwapchains = &context.swapchain;
     presentInfo.pImageIndices = &imageIndex;
 
-    VK_CHECK(vkQueuePresentKHR(context.presentQueue, &presentInfo));
+    res = vkQueuePresentKHR(context.presentQueue, &presentInfo);
+
+    if(res == VK_ERROR_OUT_OF_DATE_KHR || res == VK_SUBOPTIMAL_KHR)
+    {
+        return;
+    }
 }
 
 void vulkan_rendererBackendOnResize(u32 newWidth, u32 newHeight)
