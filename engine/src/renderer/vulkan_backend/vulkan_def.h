@@ -33,6 +33,9 @@ typedef struct VulkanContext
     VkImageView* scImageViews;
 
     VkRenderPass renderPass;
+
+    VkPipeline graphicsPipeline;
+
     VkFramebuffer* scFramebuffers;
 
     VkCommandPool commandPool;

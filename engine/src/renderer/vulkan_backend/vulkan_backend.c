@@ -76,15 +76,18 @@ void vulkan_rendererBackendShutdown()
 void vulkan_rendererBackendDrawFrame(f32 delta)
 {
     vkWaitForFences(context.device, 1, &context.inFlightFence, VK_TRUE, U64_MAX);
-    vkResetFences(context.device, 1, &context.inFlightFence);
 
     u32 imageIndex = 0;
     VkResult res = vkAcquireNextImageKHR(context.device, context.swapchain, U64_MAX, context.imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
-
     if(res == VK_ERROR_OUT_OF_DATE_KHR)
     {
         return;
     }
+    else
+    {
+        vkResetFences(context.device, 1, &context.inFlightFence);
+    }
+    
 
     VK_CHECK(vkResetCommandBuffer(context.commandBuffer, 0));
 
