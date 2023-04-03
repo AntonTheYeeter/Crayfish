@@ -1,6 +1,7 @@
 #include "vulkan_graphics_pipeline.h"
 
 #include "core/filesystem.h"
+#include "renderer/vertex_buffer.h"
 
 static VkShaderModule createShaderModule(VkDevice device, VkAllocationCallbacks* allocator, const char* shaderFilename)
 {
@@ -38,8 +39,43 @@ void createGraphicsPipeline(VulkanContext* context)
     gpInfo.stageCount = 2;
     gpInfo.pStages = shaderStages;
 
-    VkPipelineVertexInputStateCreateInfo vertexInput = {VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO};
+    VkVertexInputBindingDescription bindingDescription = {};
+    bindingDescription.binding = 0;
+    bindingDescription.stride = sizeof(Vertex);
+    bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
+    VkVertexInputAttributeDescription positionAttribute = {};
+    positionAttribute.location = 0;
+    positionAttribute.binding = 0;
+    positionAttribute.format = VK_FORMAT_R32G32B32_SFLOAT;
+    positionAttribute.offset = offsetof(Vertex, position);
+
+    VkVertexInputAttributeDescription colorAttribute = {};
+    colorAttribute.location = 1;
+    colorAttribute.binding = 0;
+    colorAttribute.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+    colorAttribute.offset = offsetof(Vertex, color);
+
+    VkVertexInputAttributeDescription texCoordAttribute = {};
+    texCoordAttribute.location = 2;
+    texCoordAttribute.binding = 0;
+    texCoordAttribute.format = VK_FORMAT_R32G32_SFLOAT;
+    texCoordAttribute.offset = offsetof(Vertex, texCoord);
+
+    VkVertexInputAttributeDescription normalAttribute = {};
+    normalAttribute.location = 3;
+    normalAttribute.binding = 0;
+    normalAttribute.format = VK_FORMAT_R32G32B32_SFLOAT;
+    normalAttribute.offset = offsetof(Vertex, normal);
+
+    VkVertexInputAttributeDescription attributes[] = {positionAttribute, colorAttribute, texCoordAttribute, normalAttribute};
+
+    VkPipelineVertexInputStateCreateInfo vertexInput = {VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO};
+    vertexInput.vertexBindingDescriptionCount = 1;
+    vertexInput.pVertexBindingDescriptions = &bindingDescription;
+    vertexInput.vertexAttributeDescriptionCount = ARRAY_SIZE(attributes);
+    vertexInput.pVertexAttributeDescriptions = attributes;
+    
     gpInfo.pVertexInputState = &vertexInput;
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO};

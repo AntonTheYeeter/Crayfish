@@ -9,6 +9,7 @@
 #include "vulkan_graphics_pipeline.h"
 #include "vulkan_command_buffers.h"
 #include "vulkan_sync_objects.h"
+#include "vulkan_vertex_buffer.h"
 
 static VulkanContext context;
 
@@ -33,6 +34,15 @@ b8 vulkan_rendererBackendStartup(PlatformWindow* win, u32 windowWidth, u32 windo
     allocateCommandBuffer(&context);
     createSyncObjects(&context);
 
+    Vertex vertices[] =
+    {
+        {{ 0.0,-0.5}, {1.0f, 0.0f, 0.0f, 1.0f}},
+        {{ 0.5, 0.5}, {0.0f, 1.0f, 0.0f, 1.0f}},
+        {{-0.5, 0.5}, {0.0f, 0.0f, 1.0f, 1.0f}}
+    };
+
+    createVertexBuffer(&context, vertices, ARRAY_SIZE(vertices));
+
     return TRUE;
 }
 
@@ -40,12 +50,17 @@ void vulkan_rendererBackendShutdown()
 {
     vkDeviceWaitIdle(context.device);
 
+    vkDestroyBuffer(context.device, context.vertexBuffer, context.allocator);
+    vkFreeMemory(context.device, context.vertexBufferMemory, context.allocator);
+
     vkDestroyFence(context.device, context.inFlightFence, context.allocator);
     vkDestroySemaphore(context.device, context.renderFinishedSemaphore, context.allocator);
     vkDestroySemaphore(context.device, context.imageAvailableSemaphore, context.allocator);
 
-    vkFreeCommandBuffers(context.device, context.commandPool, 1, &context.commandBuffer);
-    vkDestroyCommandPool(context.device, context.commandPool, context.allocator);
+    vkFreeCommandBuffers(context.device, context.transferQueueCommandPool, 1, &context.transferQueueCommandBuffer);
+    vkDestroyCommandPool(context.device, context.transferQueueCommandPool, context.allocator);
+    vkFreeCommandBuffers(context.device, context.graphicsQueueCommandPool, 1, &context.graphicsQueueCommandBuffer);
+    vkDestroyCommandPool(context.device, context.graphicsQueueCommandPool, context.allocator);
 
     for(u32 i = 0; i < context.scImageCount; i++)
     {
@@ -93,11 +108,11 @@ void vulkan_rendererBackendDrawFrame(f32 delta)
     }
     
 
-    VK_CHECK(vkResetCommandBuffer(context.commandBuffer, 0));
+    VK_CHECK(vkResetCommandBuffer(context.graphicsQueueCommandBuffer, 0));
 
     VkCommandBufferBeginInfo cmdBeginInfo = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
 
-    VK_CHECK(vkBeginCommandBuffer(context.commandBuffer, &cmdBeginInfo));
+    VK_CHECK(vkBeginCommandBuffer(context.graphicsQueueCommandBuffer, &cmdBeginInfo));
 
     VkRenderPassBeginInfo rpBeginInfo = {VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO};
     rpBeginInfo.renderPass = context.renderPass;
@@ -116,7 +131,7 @@ void vulkan_rendererBackendDrawFrame(f32 delta)
     rpBeginInfo.clearValueCount = 1;
     rpBeginInfo.pClearValues = &clearValue;
 
-    vkCmdBeginRenderPass(context.commandBuffer, &rpBeginInfo, 0);
+    vkCmdBeginRenderPass(context.graphicsQueueCommandBuffer, &rpBeginInfo, 0);
 
     {
         VkViewport viewport = {};
@@ -130,17 +145,20 @@ void vulkan_rendererBackendDrawFrame(f32 delta)
         scissor.offset.y = 0;
         scissor.extent = context.windowExtent;
 
-        vkCmdSetViewport(context.commandBuffer, 0, 1, &viewport);
-        vkCmdSetScissor(context.commandBuffer, 0, 1, &scissor);
+        vkCmdSetViewport(context.graphicsQueueCommandBuffer, 0, 1, &viewport);
+        vkCmdSetScissor(context.graphicsQueueCommandBuffer, 0, 1, &scissor);
 
-        vkCmdBindPipeline(context.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, context.graphicsPipeline);
+        vkCmdBindPipeline(context.graphicsQueueCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, context.graphicsPipeline);
 
-        vkCmdDraw(context.commandBuffer, 3, 1, 0, 0);
+        VkDeviceSize offset = 0;
+        vkCmdBindVertexBuffers(context.graphicsQueueCommandBuffer, 0, 1, &context.vertexBuffer, &offset);
+
+        vkCmdDraw(context.graphicsQueueCommandBuffer, context.numVertices, 1, 0, 0);
     }
 
-    vkCmdEndRenderPass(context.commandBuffer);
+    vkCmdEndRenderPass(context.graphicsQueueCommandBuffer);
 
-    VK_CHECK(vkEndCommandBuffer(context.commandBuffer));
+    VK_CHECK(vkEndCommandBuffer(context.graphicsQueueCommandBuffer));
 
     VkSubmitInfo submitInfo = {VK_STRUCTURE_TYPE_SUBMIT_INFO};
     submitInfo.waitSemaphoreCount = 1;
@@ -150,7 +168,7 @@ void vulkan_rendererBackendDrawFrame(f32 delta)
 
     submitInfo.pWaitDstStageMask = waitStages;
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &context.commandBuffer;
+    submitInfo.pCommandBuffers = &context.graphicsQueueCommandBuffer;
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = &context.renderFinishedSemaphore;
 

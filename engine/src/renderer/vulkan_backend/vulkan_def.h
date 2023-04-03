@@ -39,12 +39,19 @@ typedef struct VulkanContext
 
     VkFramebuffer* scFramebuffers;
 
-    VkCommandPool commandPool;
-    VkCommandBuffer commandBuffer;
+    VkCommandPool graphicsQueueCommandPool;
+    VkCommandBuffer graphicsQueueCommandBuffer;
+
+    VkCommandPool transferQueueCommandPool;
+    VkCommandBuffer transferQueueCommandBuffer;
 
     VkSemaphore imageAvailableSemaphore;
     VkSemaphore renderFinishedSemaphore;
     VkFence inFlightFence;
+
+    u32 numVertices;
+    VkBuffer vertexBuffer;
+    VkDeviceMemory vertexBufferMemory;
 } VulkanContext;
 
 #define VK_CHECK(res)                                                                                                                   \

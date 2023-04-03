@@ -2,19 +2,30 @@
 
 void createCommandPool(VulkanContext* context)
 {
-    VkCommandPoolCreateInfo commandPoolInfo = {VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO};
-    commandPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-    commandPoolInfo.queueFamilyIndex = context->graphicsQueueIndex;
+    VkCommandPoolCreateInfo graphicsQueueCommandPoolInfo = {VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO};
+    graphicsQueueCommandPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    graphicsQueueCommandPoolInfo.queueFamilyIndex = context->graphicsQueueIndex;
 
-    VK_CHECK(vkCreateCommandPool(context->device, &commandPoolInfo, context->allocator, &context->commandPool));
+    VkCommandPoolCreateInfo transferQueueCommandPoolInfo = {VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO};
+    transferQueueCommandPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    transferQueueCommandPoolInfo.queueFamilyIndex = context->transferQueueIndex;
+
+    VK_CHECK(vkCreateCommandPool(context->device, &graphicsQueueCommandPoolInfo, context->allocator, &context->graphicsQueueCommandPool));
+    VK_CHECK(vkCreateCommandPool(context->device, &transferQueueCommandPoolInfo, context->allocator, &context->transferQueueCommandPool));
 }
 
 void allocateCommandBuffer(VulkanContext* context)
 {
-    VkCommandBufferAllocateInfo cmdAllocInfo = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO};
-    cmdAllocInfo.commandPool = context->commandPool;
-    cmdAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    cmdAllocInfo.commandBufferCount = 1;
+    VkCommandBufferAllocateInfo graphicsCmdAllocInfo = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO};
+    graphicsCmdAllocInfo.commandPool = context->graphicsQueueCommandPool;
+    graphicsCmdAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    graphicsCmdAllocInfo.commandBufferCount = 1;
 
-    VK_CHECK(vkAllocateCommandBuffers(context->device, &cmdAllocInfo, &context->commandBuffer));
+    VkCommandBufferAllocateInfo transferCmdAllocInfo = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO};
+    transferCmdAllocInfo.commandPool = context->transferQueueCommandPool;
+    transferCmdAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    transferCmdAllocInfo.commandBufferCount = 1;
+
+    VK_CHECK(vkAllocateCommandBuffers(context->device, &graphicsCmdAllocInfo, &context->graphicsQueueCommandBuffer));
+    VK_CHECK(vkAllocateCommandBuffers(context->device, &transferCmdAllocInfo, &context->transferQueueCommandBuffer));
 }
