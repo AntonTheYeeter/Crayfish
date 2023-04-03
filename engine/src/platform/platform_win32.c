@@ -3,9 +3,9 @@
 #ifdef PLATFORM_WINDOWS
 
 #include <Windows.h>
+#include <stdlib.h>
 #include <string.h>
 
-#include "core/cf_memory.h"
 #include "core/logger.h"
 #include "core/event.h"
 
@@ -19,13 +19,13 @@ LRESULT CALLBACK windowCallabck(HWND hwnd, u32 msg, WPARAM wParam, LPARAM lParam
 
 b8 platformCreateWindow(PlatformWindow* win, u32 x, u32 y, u32 w, u32 h, const char* title)
 {
-    win->windowData = cfAllocate(sizeof(WindowData));
+    win->windowData = malloc(sizeof(WindowData));
     WindowData* data = (WindowData*)win->windowData;
 
     data->hInstance = GetModuleHandleA(0);
 
     WNDCLASSA wc;
-    cfZeroMemory(&wc, sizeof(WNDCLASSA));
+    memset(&wc, 0, sizeof(WNDCLASSA));
     wc.style = CS_DBLCLKS;
     wc.lpfnWndProc = windowCallabck;
     wc.hInstance = data->hInstance;
@@ -80,7 +80,7 @@ void platformDestroyWindow(PlatformWindow* win)
     WindowData* data = (WindowData*)win->windowData;
 
     DestroyWindow(data->hwnd);
-    cfFree(win->windowData);
+    free(win->windowData);
 }
 
 void platformWindowUpdate(PlatformWindow* win)
@@ -105,9 +105,9 @@ void platformWriteConsole(u32 color, const char* msg)
         BACKGROUND_RED,
         FOREGROUND_RED,
         FOREGROUND_RED | FOREGROUND_GREEN, // Yellow
-        FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE, // White
+        FOREGROUND_GREEN,
         FOREGROUND_BLUE,
-        FOREGROUND_GREEN
+        FOREGROUND_RED | FOREGROUND_BLUE
     };
 
     SetConsoleTextAttribute(stdHandle, colors[color]);

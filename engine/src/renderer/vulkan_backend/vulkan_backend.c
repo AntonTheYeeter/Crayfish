@@ -6,6 +6,7 @@
 #include "vulkan_device.h"
 #include "vulkan_swapchain.h"
 #include "vulkan_render_pass.h"
+#include "vulkan_graphics_pipeline.h"
 #include "vulkan_command_buffers.h"
 #include "vulkan_sync_objects.h"
 
@@ -26,6 +27,7 @@ b8 vulkan_rendererBackendStartup(PlatformWindow* win, u32 windowWidth, u32 windo
     createSwapchain(&context, 0);
     createImageViews(&context);
     createRenderPass(&context);
+    createGraphicsPipeline(&context);
     createFramebuffers(&context);
     createCommandPool(&context);
     allocateCommandBuffer(&context);
@@ -50,6 +52,8 @@ void vulkan_rendererBackendShutdown()
         vkDestroyFramebuffer(context.device, context.scFramebuffers[i], context.allocator);
     }
 
+    vkDestroyPipeline(context.device, context.graphicsPipeline, context.allocator);
+    vkDestroyPipelineLayout(context.device, context.pipelineLayout, context.allocator);
     vkDestroyRenderPass(context.device, context.renderPass, context.allocator);
 
     for(u32 i = 0; i < context.scImageCount; i++)
@@ -104,7 +108,7 @@ void vulkan_rendererBackendDrawFrame(f32 delta)
 
     rpBeginInfo.renderArea = renderArea;
 
-    VkClearColorValue clearColor = {1.0f, 0.0f, 0.0f, 1.0f};
+    VkClearColorValue clearColor = {0.0f, 0.0f, 0.0f, 1.0f};
 
     VkClearValue clearValue = {};
     clearValue.color = clearColor;
@@ -115,7 +119,23 @@ void vulkan_rendererBackendDrawFrame(f32 delta)
     vkCmdBeginRenderPass(context.commandBuffer, &rpBeginInfo, 0);
 
     {
+        VkViewport viewport = {};
+        viewport.x = 0;
+        viewport.y = 0;
+        viewport.width = context.windowExtent.width;
+        viewport.height = context.windowExtent.height;
 
+        VkRect2D scissor = {};
+        scissor.offset.x = 0;
+        scissor.offset.y = 0;
+        scissor.extent = context.windowExtent;
+
+        vkCmdSetViewport(context.commandBuffer, 0, 1, &viewport);
+        vkCmdSetScissor(context.commandBuffer, 0, 1, &scissor);
+
+        vkCmdBindPipeline(context.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, context.graphicsPipeline);
+
+        vkCmdDraw(context.commandBuffer, 3, 1, 0, 0);
     }
 
     vkCmdEndRenderPass(context.commandBuffer);

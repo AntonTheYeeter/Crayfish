@@ -4,6 +4,7 @@
 
 #include <xcb/xcb.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/time.h>
 #include <time.h>
 
@@ -20,7 +21,7 @@ typedef struct WindowData
 
 b8 platformCreateWindow(PlatformWindow* win, u32 x, u32 y, u32 w, u32 h, const char* title)
 {
-    win->windowData = cfAllocate(sizeof(WindowData));
+    win->windowData = malloc(sizeof(WindowData));
     WindowData* data = (WindowData*)win->windowData;
 
     data->connection = xcb_connect(PNULL, PNULL);
@@ -45,7 +46,7 @@ b8 platformCreateWindow(PlatformWindow* win, u32 x, u32 y, u32 w, u32 h, const c
     xcb_intern_atom_cookie_t closeCookie = xcb_intern_atom(data->connection, FALSE, 16, "WM_DELETE_WINDOW");
     data->closeReply = xcb_intern_atom_reply(data->connection, closeCookie, 0);
     xcb_change_property(data->connection, XCB_PROP_MODE_REPLACE, data->window, (*protocolsReply).atom, 4, 32, 1, &(*data->closeReply).atom);
-    cfFree(protocolsReply);
+    free(protocolsReply);
 
     xcb_map_window(data->connection, data->window);
     xcb_flush(data->connection);
@@ -60,7 +61,7 @@ void platformDestroyWindow(PlatformWindow* win)
     xcb_destroy_window(data->connection, data->window);
     xcb_disconnect(data->connection);
 
-    cfFree(win->windowData);
+    free(win->windowData);
 }
 
 void platformWindowUpdate(PlatformWindow* win)
@@ -100,7 +101,7 @@ void platformWindowUpdate(PlatformWindow* win)
                 break;
         }
 
-        cfFree(e);
+        free(e);
     }
 }
 
