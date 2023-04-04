@@ -7,5 +7,6 @@ b8 vulkan_rendererBackendStartup(PlatformWindow* win, u32 windowWidth, u32 windo
 void vulkan_rendererBackendShutdown();
 void vulkan_rendererBackendDrawFrame(f32 delta);
 void vulkan_rendererBackendOnResize(u32 newWidth, u32 newHeight);
+void vulkan_rendererBackendAddMeshData(u32 meshCount, Mesh* meshes);
 
 #endif

@@ -1,7 +1,7 @@
 #include "vulkan_graphics_pipeline.h"
 
 #include "core/filesystem.h"
-#include "renderer/vertex_buffer.h"
+#include "renderer/renderer.h"
 
 static VkShaderModule createShaderModule(VkDevice device, VkAllocationCallbacks* allocator, const char* shaderFilename)
 {

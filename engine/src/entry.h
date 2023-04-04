@@ -5,12 +5,14 @@
 
 extern ApplicationConfig configApp();
 
+extern void start();
+extern void update(f32 delta);
+
 int main(int argc, const char* argv[])
 {
     ApplicationConfig config = configApp();
-    Application app;
 
-    appStartup(&config);
+    appStartup(&config, start, update);
     appRun();
     appShutdown();
 

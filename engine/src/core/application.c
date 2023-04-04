@@ -9,7 +9,7 @@ static Application app;
 void onWindowClose(EventCode code, void* data);
 void onWindowResize(EventCode code, void* data);
 
-b8 appStartup(ApplicationConfig* config)
+b8 appStartup(ApplicationConfig* config, PFN_gameStart start, PFN_gameUpdate update)
 {
     CF_ASSERT(loggerStartup);
     cfZeroMemory(&app.window, sizeof(PlatformWindow));
@@ -21,6 +21,8 @@ b8 appStartup(ApplicationConfig* config)
     addEvent(EVENT_CODE_WINDOW_RESIZED, onWindowResize);
 
     app.running = TRUE;
+    app.start = start;
+    app.update = update;
 
     return TRUE;
 }
@@ -30,14 +32,26 @@ void appRun()
     f64 startTime = 0;
     f64 deltaTime = 0;
 
+    app.start();
+
     while(app.running)
     {
         startTime = platformGetTime();
+
+        app.update(deltaTime);
 
         rendererDrawFrame(&app.renderer, deltaTime);
         platformWindowUpdate(&app.window);
 
         deltaTime = platformGetTime() - startTime;
+    }
+}
+
+void addMesh(Mesh mesh)
+{
+    if(mesh.isVisible)
+    {
+        rendererAddMeshData(&app.renderer, 1, &mesh);
     }
 }
 

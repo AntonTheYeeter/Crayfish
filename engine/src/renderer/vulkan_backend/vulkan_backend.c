@@ -34,14 +34,7 @@ b8 vulkan_rendererBackendStartup(PlatformWindow* win, u32 windowWidth, u32 windo
     allocateCommandBuffer(&context);
     createSyncObjects(&context);
 
-    Vertex vertices[] =
-    {
-        {{ 0.0,-0.5}, {1.0f, 0.0f, 0.0f, 1.0f}},
-        {{ 0.5, 0.5}, {0.0f, 1.0f, 0.0f, 1.0f}},
-        {{-0.5, 0.5}, {0.0f, 0.0f, 1.0f, 1.0f}}
-    };
-
-    createVertexBuffer(&context, vertices, ARRAY_SIZE(vertices));
+    context.vertexBuffer = VK_NULL_HANDLE;
 
     return TRUE;
 }
@@ -50,8 +43,11 @@ void vulkan_rendererBackendShutdown()
 {
     vkDeviceWaitIdle(context.device);
 
-    vkDestroyBuffer(context.device, context.vertexBuffer, context.allocator);
-    vkFreeMemory(context.device, context.vertexBufferMemory, context.allocator);
+    if(context.vertexBuffer != VK_NULL_HANDLE)
+    {
+        vkDestroyBuffer(context.device, context.vertexBuffer, context.allocator);
+        vkFreeMemory(context.device, context.vertexBufferMemory, context.allocator);
+    }
 
     vkDestroyFence(context.device, context.inFlightFence, context.allocator);
     vkDestroySemaphore(context.device, context.renderFinishedSemaphore, context.allocator);
@@ -150,10 +146,14 @@ void vulkan_rendererBackendDrawFrame(f32 delta)
 
         vkCmdBindPipeline(context.graphicsQueueCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, context.graphicsPipeline);
 
-        VkDeviceSize offset = 0;
-        vkCmdBindVertexBuffers(context.graphicsQueueCommandBuffer, 0, 1, &context.vertexBuffer, &offset);
+        if(context.vertexBuffer != VK_NULL_HANDLE)
+        {
+            VkDeviceSize offset = 0;
+            vkCmdBindVertexBuffers(context.graphicsQueueCommandBuffer, 0, 1, &context.vertexBuffer, &offset);
 
-        vkCmdDraw(context.graphicsQueueCommandBuffer, context.numVertices, 1, 0, 0);
+            vkCmdDraw(context.graphicsQueueCommandBuffer, context.numVertices, 1, 0, 0);
+        }
+
     }
 
     vkCmdEndRenderPass(context.graphicsQueueCommandBuffer);
@@ -218,4 +218,36 @@ void recreateSwapchain(u32 newWidth, u32 newHeight)
 void vulkan_rendererBackendOnResize(u32 newWidth, u32 newHeight)
 {
     recreateSwapchain(newWidth, newHeight);
+}
+
+void vulkan_rendererBackendAddMeshData(u32 meshCount, Mesh* meshes)
+{
+    if(context.vertexBuffer != VK_NULL_HANDLE)
+    {
+        vkDestroyBuffer(context.device, context.vertexBuffer, context.allocator);
+        vkFreeMemory(context.device, context.vertexBufferMemory, context.allocator);
+    }
+
+    u32 totalVertexCount = 0;
+    for(u32 i = 0; i < meshCount; i++)
+    {
+        for(u32 j = 0; j < meshes[i].numVertices; j++)
+        {
+            totalVertexCount++;
+        }
+    }
+
+    Vertex vertices[totalVertexCount];
+    u32 vertexIndex = 0;
+
+    for(u32 i = 0; i < meshCount; i++)
+    {
+        for(u32 j = 0; j < meshes[i].numVertices; j++)
+        {
+            vertices[vertexIndex] = meshes->vertices[vertexIndex];
+            vertexIndex++;
+        }
+    }
+
+    createVertexBuffer(&context, vertices, totalVertexCount);
 }

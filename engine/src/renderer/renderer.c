@@ -10,6 +10,7 @@ b8 rendererStartup(PlatformWindow* win, Renderer* r, BackendType backend, u32 wi
         r->backendShutdown = vulkan_rendererBackendShutdown;
         r->backendDrawFrame = vulkan_rendererBackendDrawFrame;
         r->backendOnResize = vulkan_rendererBackendOnResize;
+        r->backendAddMeshData = vulkan_rendererBackendAddMeshData;
     }
     else
     {
@@ -35,4 +36,9 @@ void rendererDrawFrame(Renderer* r, f32 delta)
 void rendererOnResize(Renderer* r, u32 newWidth, u32 newHeight)
 {
     r->backendOnResize(newWidth, newHeight);
+}
+
+void rendererAddMeshData(Renderer* r, u32 meshCount, Mesh* meshes)
+{
+    r->backendAddMeshData(meshCount, meshes);
 }
