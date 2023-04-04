@@ -112,9 +112,9 @@ void platformWriteConsole(u32 color, const char* msg)
         "[41;30m",
         "[0;31m",
         "[0;33m",
-        "[0;37m",
-        "[0;34m",
         "[0;32m",
+        "[0;34m",
+        "[0;35m",
     };
 
     printf("\e%s%s\e[0m", colorCodes[color], msg);
