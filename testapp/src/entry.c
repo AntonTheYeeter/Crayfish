@@ -16,21 +16,21 @@ ApplicationConfig configApp()
 
 void start()
 {
-    Vertex triangleVertices[] =
+    Vertex triangle1Vertices[] =
     {
         {{ 0.0,-0.5, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
         {{ 0.5, 0.5, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
         {{-0.5, 0.5, 0.0f}, {0.0f, 0.0f, 1.0f, 1.0f}}
     };
 
-    Mesh triangle = 
+    Mesh triangle1 = 
     {
         .isVisible = TRUE,
-        .numVertices = ARRAY_SIZE(triangleVertices),
-        .vertices = triangleVertices
+        .numVertices = ARRAY_SIZE(triangle1Vertices),
+        .vertices = triangle1Vertices
     };
 
-    addMesh(triangle);
+    addMesh(triangle1);
 }
 
 void update(f32 delta)

@@ -244,10 +244,11 @@ void vulkan_rendererBackendAddMeshData(u32 meshCount, Mesh* meshes)
     {
         for(u32 j = 0; j < meshes[i].numVertices; j++)
         {
-            vertices[vertexIndex] = meshes->vertices[vertexIndex];
+            vertices[vertexIndex] = meshes->vertices[j];
             vertexIndex++;
         }
     }
 
     createVertexBuffer(&context, vertices, totalVertexCount);
+    context.numVertices = totalVertexCount;
 }

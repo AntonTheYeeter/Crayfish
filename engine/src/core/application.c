@@ -49,10 +49,10 @@ void appRun()
 
 void addMesh(Mesh mesh)
 {
-    if(mesh.isVisible)
-    {
-        rendererAddMeshData(&app.renderer, 1, &mesh);
-    }
+    app.meshes[app.meshCount] = mesh;
+    app.meshCount++;
+
+    rendererAddMeshData(&app.renderer, app.meshCount, app.meshes);
 }
 
 void appShutdown()

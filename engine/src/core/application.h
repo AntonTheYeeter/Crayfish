@@ -19,6 +19,8 @@ typedef struct ApplicationConfig
 typedef void (*PFN_gameStart)();
 typedef void (*PFN_gameUpdate)(f32 delta);
 
+#define MAX_MESHES 32000
+
 typedef struct Application
 {
     b8 running;
@@ -27,6 +29,9 @@ typedef struct Application
 
     PFN_gameStart start;
     PFN_gameUpdate update;
+
+    u32 meshCount;
+    Mesh meshes[MAX_MESHES];
 } Application;
 
 CFAPI b8 appStartup(ApplicationConfig* config, PFN_gameStart start, PFN_gameUpdate update);
