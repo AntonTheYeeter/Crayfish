@@ -17,6 +17,8 @@ typedef struct Mesh
 {
     u32 numVertices;
     Vertex* vertices;
+    u32 numIndices;
+    u32* indices;
 
     b8 isVisible;
 } Mesh;

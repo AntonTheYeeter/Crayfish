@@ -43,6 +43,12 @@ void vulkan_rendererBackendShutdown()
 {
     vkDeviceWaitIdle(context.device);
 
+    if(context.indexBuffer != VK_NULL_HANDLE)
+    {
+        vkDestroyBuffer(context.device, context.indexBuffer, context.allocator);
+        vkFreeMemory(context.device, context.indexBufferMemory, context.allocator);
+    }
+
     if(context.vertexBuffer != VK_NULL_HANDLE)
     {
         vkDestroyBuffer(context.device, context.vertexBuffer, context.allocator);
@@ -148,12 +154,26 @@ void vulkan_rendererBackendDrawFrame(f32 delta)
 
         if(context.vertexBuffer != VK_NULL_HANDLE)
         {
-            VkDeviceSize offset = 0;
-            vkCmdBindVertexBuffers(context.graphicsQueueCommandBuffer, 0, 1, &context.vertexBuffer, &offset);
+            if(context.indexBuffer != VK_NULL_HANDLE)
+            {
+                VkDeviceSize offset = 0;
+                vkCmdBindVertexBuffers(context.graphicsQueueCommandBuffer, 0, 1, &context.vertexBuffer, &offset);
+                vkCmdBindIndexBuffer(context.graphicsQueueCommandBuffer, context.indexBuffer, offset, VK_INDEX_TYPE_UINT32);
 
-            vkCmdDraw(context.graphicsQueueCommandBuffer, context.numVertices, 1, 0, 0);
+                vkCmdDrawIndexed(context.graphicsQueueCommandBuffer, context.numIndices, 1, 0, 0, 0);
+            }
+            else
+            {
+                VkDeviceSize offset = 0;
+                vkCmdBindVertexBuffers(context.graphicsQueueCommandBuffer, 0, 1, &context.vertexBuffer, &offset);
+
+                vkCmdDraw(context.graphicsQueueCommandBuffer, context.numVertices, 1, 0, 0);
+            }
         }
-
+        else
+        {
+            return;
+        }
     }
 
     vkCmdEndRenderPass(context.graphicsQueueCommandBuffer);
@@ -228,17 +248,32 @@ void vulkan_rendererBackendAddMeshData(u32 meshCount, Mesh* meshes)
         vkFreeMemory(context.device, context.vertexBufferMemory, context.allocator);
     }
 
+    if(context.indexBuffer != VK_NULL_HANDLE)
+    {
+        vkDestroyBuffer(context.device, context.indexBuffer, context.allocator);
+        vkFreeMemory(context.device, context.indexBufferMemory, context.allocator);
+    }
+
     u32 totalVertexCount = 0;
+    u32 totalIndexCount = 0;
     for(u32 i = 0; i < meshCount; i++)
     {
         for(u32 j = 0; j < meshes[i].numVertices; j++)
         {
             totalVertexCount++;
         }
+
+        for(u32 j = 0; j < meshes[i].numIndices; j++)
+        {
+            totalIndexCount++;
+        }
     }
 
     Vertex vertices[totalVertexCount];
     u32 vertexIndex = 0;
+
+    u32 indices[totalIndexCount];
+    u32 indexIndex = 0; // Weird name but ok
 
     for(u32 i = 0; i < meshCount; i++)
     {
@@ -247,8 +282,17 @@ void vulkan_rendererBackendAddMeshData(u32 meshCount, Mesh* meshes)
             vertices[vertexIndex] = meshes->vertices[j];
             vertexIndex++;
         }
+
+        for(u32 j = 0; j < meshes[i].numIndices; j++)
+        {
+            indices[indexIndex] = meshes->indices[j];
+            indexIndex++;
+        }
     }
 
     createVertexBuffer(&context, vertices, totalVertexCount);
     context.numVertices = totalVertexCount;
+
+    createIndexBuffer(&context, indices, totalIndexCount);
+    context.numIndices = totalIndexCount;
 }

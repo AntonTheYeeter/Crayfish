@@ -52,6 +52,10 @@ typedef struct VulkanContext
     u32 numVertices;
     VkBuffer vertexBuffer;
     VkDeviceMemory vertexBufferMemory;
+
+    u32 numIndices;
+    VkBuffer indexBuffer;
+    VkDeviceMemory indexBufferMemory;
 } VulkanContext;
 
 #define VK_CHECK(res)                                                                                                                   \

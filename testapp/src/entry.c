@@ -16,21 +16,33 @@ ApplicationConfig configApp()
 
 void start()
 {
-    Vertex triangle1Vertices[] =
+    Vertex vertices[] =
     {
-        {{ 0.0,-0.5, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
-        {{ 0.5, 0.5, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-        {{-0.5, 0.5, 0.0f}, {0.0f, 0.0f, 1.0f, 1.0f}}
+        {{ 0.5,-0.5, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
+        {{ 1.0, 0.5, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
+        {{ 0.0, 0.5, 0.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
+
+        {{-0.5,-0.5, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
+        {{ 0.0, 0.5, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
+        {{-1.0, 0.5, 0.0f}, {0.0f, 0.0f, 1.0f, 1.0f}}
     };
 
-    Mesh triangle1 = 
+    u32 indices[] = 
+    {
+        0, 1, 2,
+        3, 4, 5
+    };
+
+    Mesh mesh = 
     {
         .isVisible = TRUE,
-        .numVertices = ARRAY_SIZE(triangle1Vertices),
-        .vertices = triangle1Vertices
+        .numVertices = ARRAY_SIZE(vertices),
+        .vertices = vertices,
+        .numIndices = ARRAY_SIZE(indices),
+        .indices = indices
     };
 
-    addMesh(triangle1);
+    addMesh(mesh);
 }
 
 void update(f32 delta)
