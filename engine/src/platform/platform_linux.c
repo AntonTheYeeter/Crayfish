@@ -64,6 +64,9 @@ void platformDestroyWindow(PlatformWindow* win)
     free(win->windowData);
 }
 
+static u32 w;
+static u32 h;
+
 void platformWindowUpdate(PlatformWindow* win)
 {
     WindowData* data = (WindowData*)win->windowData;
@@ -88,13 +91,18 @@ void platformWindowUpdate(PlatformWindow* win)
 
             case XCB_CONFIGURE_NOTIFY:
             {
-                const xcb_configure_notify_event_t* cfgEvent = (const xcb_configure_notify_event_t*)e;
+                xcb_configure_notify_event_t* cfgEvent = (xcb_configure_notify_event_t*)e;
 
-                u32 windowSize[2];
-                windowSize[0] = cfgEvent->width;
-                windowSize[1] = cfgEvent->height;
+                if((cfgEvent->width > 0) && (w != cfgEvent->width) ||
+                (cfgEvent->width > 0) && (h != cfgEvent->height))
+                {
+                    w = cfgEvent->width;
+                    h = cfgEvent->height;
 
-                fireEvent(EVENT_CODE_WINDOW_RESIZED, windowSize);
+                    u32 windowSize[] = {w, h};
+                    fireEvent(EVENT_CODE_WINDOW_RESIZED, windowSize);
+                }
+
             } break;
 
             default:

@@ -10,6 +10,7 @@
 #include "vulkan_command_buffers.h"
 #include "vulkan_sync_objects.h"
 #include "vulkan_vertex_buffer.h"
+#include "vulkan_index_buffer.h"
 
 static VulkanContext context;
 

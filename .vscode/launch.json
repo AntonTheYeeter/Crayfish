@@ -19,7 +19,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/bin/testapp",
             "cwd": "${workspaceFolder}/bin",
-            "preLaunchTask": "CMake: build"
+            "preLaunchTask": "CMake: build",
+            "externalConsole": true
         }
     ]
 }
