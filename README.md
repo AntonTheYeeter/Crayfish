@@ -1,2 +1,2 @@
 # Crayfish
-C game engine
+C game engine (paused/discontinued)
