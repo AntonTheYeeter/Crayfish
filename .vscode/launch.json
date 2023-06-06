@@ -8,7 +8,7 @@
             "name": "Launch(Windows)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/testapp.exe",
+            "program": "${workspaceFolder}/bin/Debug/testapp.exe",
             "cwd": "${workspaceFolder}/bin",
             "preLaunchTask": "CMake: build",
             "console": "newExternalWindow"

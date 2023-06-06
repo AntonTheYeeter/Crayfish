@@ -2,7 +2,7 @@
 
 void createRenderPass(VulkanContext* context)
 {
-    VkAttachmentDescription attachment = {};
+    VkAttachmentDescription attachment = {0};
     attachment.format = context->scFormat.format;
     attachment.samples = VK_SAMPLE_COUNT_1_BIT;
     attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
@@ -10,11 +10,11 @@ void createRenderPass(VulkanContext* context)
     attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
-    VkAttachmentReference colorAttachment = {};
+    VkAttachmentReference colorAttachment = {0};
     colorAttachment.attachment = 0;
     colorAttachment.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-    VkSubpassDescription subpass = {};
+    VkSubpassDescription subpass = {0};
     subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
     subpass.colorAttachmentCount = 1;
     subpass.pColorAttachments = &colorAttachment;

@@ -48,7 +48,7 @@ void copyBuffer(VulkanContext* context, VkBuffer src, VkBuffer dst, VkDeviceSize
 
     VK_CHECK(vkBeginCommandBuffer(context->transferQueueCommandBuffer, &cmdBeginInfo));
 
-    VkBufferCopy copyRegion = {};
+    VkBufferCopy copyRegion = {0};
     copyRegion.size = size;
 
     vkCmdCopyBuffer(context->transferQueueCommandBuffer, src, dst, 1, &copyRegion);

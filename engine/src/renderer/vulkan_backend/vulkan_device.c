@@ -1,6 +1,7 @@
 #include "vulkan_device.h"
 
 #include "platform/platform.h"
+#include "core/cf_memory.h"
 
 void createInstance(VulkanContext* context)
 {
@@ -91,7 +92,7 @@ void selectGPU(VulkanContext* context)
 {
     u32 gpuCount = 0;
     VK_CHECK(vkEnumeratePhysicalDevices(context->instance, &gpuCount, PNULL));
-    VkPhysicalDevice gpus[gpuCount];
+    VkPhysicalDevice* gpus = cfAllocate(gpuCount * sizeof(VkPhysicalDevice));
     VK_CHECK(vkEnumeratePhysicalDevices(context->instance, &gpuCount, gpus));
 
     b8 graphicsQueueFound = FALSE;
@@ -105,7 +106,7 @@ void selectGPU(VulkanContext* context)
 
         u32 queueFamilyCount = 0;
         vkGetPhysicalDeviceQueueFamilyProperties(gpus[i], &queueFamilyCount, PNULL);
-        VkQueueFamilyProperties queueFamilies[queueFamilyCount];
+        VkQueueFamilyProperties* queueFamilies = cfAllocate(queueFamilyCount * sizeof(VkQueueFamilyProperties));
         vkGetPhysicalDeviceQueueFamilyProperties(gpus[i], &queueFamilyCount, queueFamilies);
 
         if(props.deviceType != VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)

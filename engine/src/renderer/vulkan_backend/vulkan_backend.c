@@ -121,14 +121,14 @@ void vulkan_rendererBackendDrawFrame(f32 delta)
     rpBeginInfo.renderPass = context.renderPass;
     rpBeginInfo.framebuffer = context.scFramebuffers[imageIndex];
 
-    VkRect2D renderArea = {};
+    VkRect2D renderArea = {0};
     renderArea.extent = context.windowExtent;
 
     rpBeginInfo.renderArea = renderArea;
 
     VkClearColorValue clearColor = {0.0f, 0.0f, 0.0f, 1.0f};
 
-    VkClearValue clearValue = {};
+    VkClearValue clearValue = {0};
     clearValue.color = clearColor;
 
     rpBeginInfo.clearValueCount = 1;
@@ -137,13 +137,13 @@ void vulkan_rendererBackendDrawFrame(f32 delta)
     vkCmdBeginRenderPass(context.graphicsQueueCommandBuffer, &rpBeginInfo, 0);
 
     {
-        VkViewport viewport = {};
+        VkViewport viewport = {0};
         viewport.x = 0;
         viewport.y = 0;
         viewport.width = context.windowExtent.width;
         viewport.height = context.windowExtent.height;
 
-        VkRect2D scissor = {};
+        VkRect2D scissor = {0};
         scissor.offset.x = 0;
         scissor.offset.y = 0;
         scissor.extent = context.windowExtent;
@@ -270,10 +270,10 @@ void vulkan_rendererBackendAddMeshData(u32 meshCount, Mesh* meshes)
         }
     }
 
-    Vertex vertices[totalVertexCount];
+    Vertex* vertices = cfAllocate(totalVertexCount * sizeof(Vertex));
     u32 vertexIndex = 0;
 
-    u32 indices[totalIndexCount];
+    u32* indices = cfAllocate(totalIndexCount * sizeof(u32));
     u32 indexIndex = 0; // Weird name but ok
 
     for(u32 i = 0; i < meshCount; i++)

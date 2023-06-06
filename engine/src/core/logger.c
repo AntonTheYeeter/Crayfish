@@ -24,7 +24,7 @@ void _log(LogLevel lvl, const char* msg, ...)
     char buffer[32000];
     cfZeroMemory(buffer, 32000);
 
-    __builtin_va_list arg;
+    va_list arg;
     va_start(arg, msg);
     vsnprintf(buffer, 32000, msg, arg);
     va_end(arg);

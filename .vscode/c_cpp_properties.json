@@ -10,10 +10,10 @@
                 "_DEBUG",
                 "CFEXPORT"
             ],
-            "compilerPath": "C:/Program Files/LLVM/bin/clang.exe",
+            "compilerPath": "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.35.32215/bin/Hostx86/x64/cl.exe",
             "cStandard": "c17",
             "cppStandard": "c++14",
-            "intelliSenseMode": "windows-clang-x64",
+            "intelliSenseMode": "windows-msvc-x64",
             "mergeConfigurations": false,
             "browse": {
                 "path": [
@@ -33,10 +33,10 @@
                 "_DEBUG",
                 "CFEXPORT"
             ],
-            "compilerPath": "/usr/bin/clang",
+            "compilerPath": "/usr/bin/gcc",
             "cStandard": "c17",
             "cppStandard": "c++14",
-            "intelliSenseMode": "linux-clang-x64"
+            "intelliSenseMode": "linux-gcc-x64"
         }
     ],
     "version": 4

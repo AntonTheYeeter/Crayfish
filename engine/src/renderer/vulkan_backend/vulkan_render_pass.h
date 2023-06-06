@@ -7,5 +7,4 @@
 void createRenderPass(VulkanContext* context);
 void createFramebuffers(VulkanContext* context);
 
-
 #endif

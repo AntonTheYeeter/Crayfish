@@ -14,7 +14,7 @@ void createSwapchain(VulkanContext* context, VkSwapchainKHR oldSwapchain)
     {
         u32 formatCount = 0;
         vkGetPhysicalDeviceSurfaceFormatsKHR(context->gpu, context->surface, &formatCount, PNULL);
-        VkSurfaceFormatKHR availableFormats[formatCount];
+        VkSurfaceFormatKHR* availableFormats = cfAllocate(formatCount * sizeof(VkSurfaceFormatKHR));
         vkGetPhysicalDeviceSurfaceFormatsKHR(context->gpu, context->surface, &formatCount, availableFormats);
 
         b8 foundFormat = FALSE;
@@ -53,7 +53,7 @@ void createSwapchain(VulkanContext* context, VkSwapchainKHR oldSwapchain)
     {
         u32 presentModeCount = 0;
         vkGetPhysicalDeviceSurfacePresentModesKHR(context->gpu, context->surface, &presentModeCount, PNULL);
-        VkPresentModeKHR availablePresentModes[presentModeCount];
+        VkPresentModeKHR* availablePresentModes = cfAllocate(presentModeCount * sizeof(VkPresentModeKHR));
         vkGetPhysicalDeviceSurfacePresentModesKHR(context->gpu, context->surface, &presentModeCount, availablePresentModes);
 
         b8 foundPresentMode = FALSE;
